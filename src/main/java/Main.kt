@@ -359,8 +359,6 @@ fun calPoints(operations: Array<String>): Int {
 }
 
 
-//73,74,75,71,69,72,76,73
-//-0-1--2--3--4--5--6--7
 fun dailyTemperatures(temperatures: IntArray): IntArray {
     val stack = Stack<Pair<Int, Int>>()
     val res = MutableList(temperatures.size, { 0 })
