@@ -346,10 +346,6 @@ fun calPoints(operations: Array<String>): Int {
             println("stack = ${stack.toList()}")
         }
     }
-
-
-
-
     while (stack.isNotEmpty()) {
         res += stack.pop()
     }
