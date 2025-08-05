@@ -311,7 +311,6 @@ fun minSubArrayLen(target: Int, nums: IntArray): Int {
             l++
         }
         r++
-
     }
     return if (minL == Int.MIN_VALUE) 0 else minL
 }
@@ -346,10 +345,6 @@ fun calPoints(operations: Array<String>): Int {
             println("stack = ${stack.toList()}")
         }
     }
-
-
-
-
     while (stack.isNotEmpty()) {
         res += stack.pop()
     }
