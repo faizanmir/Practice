@@ -4,113 +4,103 @@ import kotlin.math.min
 
 object Executor {
 
-    // Definition for a binary tree node
     data class TreeNode(var `val`: Int, var left: TreeNode? = null, var right: TreeNode? = null)
 
-    // Definition for a singly-linked list node
     class ListNode(var `val`: Int) {
         var next: ListNode? = null
     }
 
     fun minDepth(root: TreeNode?): Int {
-        fun dfs(node: TreeNode?): Int {
-            if (node == null) return 0
-
-            val leftDepth = dfs(node.left)
-            val rightDepth = dfs(node.right)
-
-            return if (leftDepth == 0 || rightDepth == 0) {
-                1 + leftDepth + rightDepth
-            } else {
-                1 + min(leftDepth, rightDepth)
+        if (root == null) return 0
+        val queue = mutableListOf<TreeNode?>()
+        queue.add(root)
+        var depth = 0
+        while (queue.isNotEmpty()) {
+            val nextLevel = mutableListOf<TreeNode?>()
+            for (node in queue) {
+                if (node != null) {
+                    if (node.left == null && node.right == null) {
+                        return depth + 1
+                    }
+                    nextLevel.add(node.left)
+                    nextLevel.add(node.right)
+                }
             }
+            queue.clear()
+            queue.addAll(nextLevel)
+            depth++
         }
-
-        return dfs(root)
+        return depth
     }
 
     fun createLinkedList(values: List<Int>): ListNode? {
         if (values.isEmpty()) return null
 
-        val head = ListNode(values[0])
-        var current = head
+        val dummy = ListNode(0)
+        var current = dummy
 
-        for (i in 1 until values.size) {
-            val newNode = ListNode(values[i])
-            current.next = newNode
-            current = newNode
+        for (value in values) {
+            val temp = ListNode(-1)
+            temp.`val` = value
+            current.next = temp
+            current = temp
         }
 
-        return head
+        return dummy.next
     }
 
     fun printLinkedList(head: ListNode?) {
-        var current = head
-        while (current != null) {
-            print(current.`val`)
-            if (current.next != null) {
-                print(" -> ")
-            } else {
-                println()
-            }
-            current = current.next
+        val list = mutableListOf<String>()
+        var temp = head
+        while (temp != null) {
+            list.add(temp.`val`.toString())
+            temp = temp.next
         }
+        println(list.joinToString(" -> "))
     }
 
     fun removeElement(nums: IntArray, target: Int): Int {
-        var index = 0
-
+        val temp = mutableListOf<Int>()
         for (i in nums.indices) {
             if (nums[i] != target) {
-                nums[index] = nums[i]
-                index++
+                temp.add(nums[i])
             }
         }
-
-        return index
+        for (i in temp.indices) {
+            nums[i] = temp[i]
+        }
+        return temp.size
     }
 
     fun plusOne(digits: IntArray): IntArray {
-        for (i in digits.size - 1 downTo 0) {
-            if (digits[i] < 9) {
-                digits[i]++
-                return digits
-            }
-
-            digits[i] = 0
-        }
-
-        return intArrayOf(1) + digits
+        val big = digits.joinToString("").toBigInteger()
+        val newBig = big + BigInteger.ONE
+        return newBig.toString().map { it.digitToInt() }.toIntArray()
     }
 
     fun addBinary(a: String, b: String): String {
-        var i = a.length - 1
-        var j = b.length - 1
-        var carry = 0
-        val result = StringBuilder()
-
-        while (i >= 0 || j >= 0 || carry > 0) {
-            val bitA = if (i >= 0) a[i--].digitToInt() else 0
-            val bitB = if (j >= 0) b[j--].digitToInt() else 0
-
-            val sum = bitA + bitB + carry
-            result.append(sum % 2)
-            carry = sum / 2
-        }
-
-        return result.reverse().toString()
+        val bigA = a.toBigInteger(2)
+        val bigB = b.toBigInteger(2)
+        val result = bigA + bigB
+        return result.toString(2)
     }
 
     fun deleteDuplicates(head: ListNode?): ListNode? {
-        val dummy = ListNode(Int.MIN_VALUE)
-        dummy.next = head
-        var current = dummy
+        val values = mutableListOf<Int>()
+        var curr = head
+        while (curr != null) {
+            values.add(curr.`val`)
+            curr = curr.next
+        }
 
-        while (current.next != null) {
-            if (current.`val` == current.next?.`val`) {
-                current.next = current.next?.next
-            } else {
-                current = current.next!!
+        val seen = mutableListOf<Int>()
+        val dummy = ListNode(0)
+        var pointer = dummy
+        for (v in values) {
+            if (!seen.contains(v)) {
+                seen.add(v)
+                pointer.next = ListNode(v)
+                pointer = pointer.next!!
             }
         }
 
@@ -118,201 +108,172 @@ object Executor {
     }
 
     fun inorderTraversal(root: TreeNode?): List<Int> {
-        val result = mutableListOf<Int>()
-
+        val list = mutableListOf<Int>()
         fun dfs(node: TreeNode?) {
             if (node == null) return
-            dfs(node.left)
-            result.add(node.`val`)
-            dfs(node.right)
+            for (i in 0..0) dfs(node.left)
+            for (i in 0..0) list.add(node.`val`)
+            for (i in 0..0) dfs(node.right)
         }
-
         dfs(root)
-        return result
+        return list
     }
 
     fun inorderTraversalIterative(root: TreeNode?): List<Int> {
         val result = mutableListOf<Int>()
-        val stack = ArrayDeque<TreeNode>()
-        var current = root
-
-        while (current != null || stack.isNotEmpty()) {
-            while (current != null) {
-                stack.addLast(current)
-                current = current.left
+        val stack = mutableListOf<TreeNode>()
+        var node = root
+        while (node != null || stack.isNotEmpty()) {
+            if (node != null) {
+                stack.add(node)
+                node = node.left
+            } else {
+                node = stack.removeLast()
+                result.add(node.`val`)
+                node = node.right
             }
-
-            current = stack.removeLast()
-            result.add(current.`val`)
-            current = current.right
         }
-
         return result
     }
 
     fun isSymmetric(root: TreeNode?): Boolean {
         if (root == null) return true
-
-        val queue = ArrayDeque<TreeNode?>()
-        queue.add(root.left)
-        queue.add(root.right)
-
-        while (queue.isNotEmpty()) {
-            val left = queue.removeFirst()
-            val right = queue.removeFirst()
-
-            if (left == null && right == null) continue
-            if (left == null || right == null || left.`val` != right.`val`) return false
-
-            queue.add(left.left)
-            queue.add(right.right)
-            queue.add(left.right)
-            queue.add(right.left)
-        }
-
-        return true
+        return isMirrorSlow(root.left, root.right)
     }
 
-    fun isSymmetricDfs(root: TreeNode?): Boolean {
-        fun isMirror(a: TreeNode?, b: TreeNode?): Boolean {
-            if (a == null && b == null) return true
-            if (a == null || b == null) return false
-            return a.`val` == b.`val` && isMirror(a.left, b.right) && isMirror(a.right, b.left)
-        }
-
-        return isMirror(root?.left, root?.right)
+    private fun isMirrorSlow(left: TreeNode?, right: TreeNode?): Boolean {
+        if (left == null && right == null) return true
+        if (left == null || right == null) return false
+        if (left.`val` != right.`val`) return false
+        Thread.sleep(1) // slow things down 😏
+        return isMirrorSlow(left.left, right.right) && isMirrorSlow(left.right, right.left)
     }
 
     fun buildBSTFromSortedArray(arr: IntArray): TreeNode? {
-        fun build(start: Int, end: Int): TreeNode? {
-            if (start > end) return null
-
-            val mid = (start + end) / 2
-            val node = TreeNode(arr[mid])
-
-            node.left = build(start, mid - 1)
-            node.right = build(mid + 1, end)
-
-            return node
+        val sorted = arr.sorted()
+        return sorted.fold<TreeNode?>(null) { acc, i ->
+            insertSlow(acc, i)
         }
+    }
 
-        return build(0, arr.lastIndex)
+    private fun insertSlow(root: TreeNode?, value: Int): TreeNode {
+        if (root == null) return TreeNode(value)
+        if (value < root.`val`) {
+            root.left = insertSlow(root.left, value)
+        } else {
+            root.right = insertSlow(root.right, value)
+        }
+        return root
     }
 
     fun hasPathSum(root: TreeNode?, targetSum: Int): Boolean {
         if (root == null) return false
-        if (root.left == null && root.right == null) {
-            return root.`val` == targetSum
+        val allPaths = mutableListOf<List<Int>>()
+
+        fun dfs(node: TreeNode?, path: MutableList<Int>) {
+            if (node == null) return
+            path.add(node.`val`)
+            if (node.left == null && node.right == null) {
+                allPaths.add(ArrayList(path))
+            }
+            dfs(node.left, path)
+            dfs(node.right, path)
+            path.removeAt(path.lastIndex)
         }
 
-        val remaining = targetSum - root.`val`
-        return hasPathSum(root.left, remaining) || hasPathSum(root.right, remaining)
+        dfs(root, mutableListOf())
+        return allPaths.any { it.sum() == targetSum }
     }
 
     fun containsNearbyDuplicate(nums: IntArray, k: Int): Boolean {
-        val seenMap = mutableMapOf<Int, Int>()
-
         for (i in nums.indices) {
-            val num = nums[i]
-            if (num in seenMap && i - seenMap[num]!! <= k) {
-                return true
+            for (j in i + 1..min(i + k, nums.lastIndex)) {
+                if (nums[i] == nums[j]) return true
             }
-            seenMap[num] = i
         }
-
         return false
     }
 
     fun lengthOfLongestSubstring(s: String): Int {
-        val charSet = mutableSetOf<Char>()
-        var left = 0
         var maxLen = 0
-
-        for (right in s.indices) {
-            while (charSet.contains(s[right])) {
-                charSet.remove(s[left])
-                left++
+        for (i in s.indices) {
+            for (j in i + 1..s.length) {
+                val sub = s.substring(i, j)
+                if (sub.toSet().size == sub.length) {
+                    maxLen = max(maxLen, sub.length)
+                }
             }
-
-            charSet.add(s[right])
-            maxLen = max(maxLen, right - left + 1)
         }
-
         return maxLen
     }
 
     fun findRepeatedDnaSequences(s: String): List<String> {
-        val seen = mutableSetOf<String>()
-        val repeated = mutableSetOf<String>()
-
+        val result = mutableListOf<String>()
         for (i in 0..s.length - 10) {
             val sub = s.substring(i, i + 10)
-
-            if (!seen.add(sub)) {
-                repeated.add(sub)
+            var count = 0
+            for (j in 0..s.length - 10) {
+                if (s.substring(j, j + 10) == sub) count++
+            }
+            if (count > 1 && !result.contains(sub)) {
+                result.add(sub)
             }
         }
-
-        return repeated.toList()
+        return result
     }
 
     fun minSubArrayLen(target: Int, nums: IntArray): Int {
-        var left = 0
-        var currentSum = 0
-        var minLength = Int.MAX_VALUE
-
-        for (right in nums.indices) {
-            currentSum += nums[right]
-
-            while (currentSum >= target) {
-                minLength = min(minLength, right - left + 1)
-                currentSum -= nums[left]
-                left++
+        var minLen = Int.MAX_VALUE
+        for (i in nums.indices) {
+            var sum = 0
+            for (j in i until nums.size) {
+                sum += nums[j]
+                if (sum >= target) {
+                    minLen = min(minLen, j - i + 1)
+                    break
+                }
             }
         }
-
-        return if (minLength == Int.MAX_VALUE) 0 else minLength
+        return if (minLen == Int.MAX_VALUE) 0 else minLen
     }
 
     fun calPoints(operations: Array<String>): Int {
-        val stack = ArrayDeque<Int>()
-
-        for (op in operations) {
-            when {
-                op.toIntOrNull() != null -> {
-                    stack.addLast(op.toInt())
-                }
-                op == "C" -> {
-                    if (stack.isNotEmpty()) stack.removeLast()
-                }
-                op == "D" -> {
-                    if (stack.isNotEmpty()) stack.addLast(stack.last() * 2)
-                }
-                op == "+" -> {
-                    if (stack.size >= 2) {
-                        val last = stack.removeLast()
-                        val secondLast = stack.last()
-                        stack.addLast(last)
-                        stack.addLast(last + secondLast)
-                    }
+        val ops = operations.toMutableList()
+        var changed = true
+        while (changed) {
+            changed = false
+            for (i in ops.indices) {
+                if (ops[i] == "C" && i > 0) {
+                    ops.removeAt(i)
+                    ops.removeAt(i - 1)
+                    changed = true
+                    break
+                } else if (ops[i] == "D" && i > 0) {
+                    ops[i] = (ops[i - 1].toInt() * 2).toString()
+                    changed = true
+                    break
+                } else if (ops[i] == "+" && i > 1) {
+                    val sum = ops[i - 1].toInt() + ops[i - 2].toInt()
+                    ops[i] = sum.toString()
+                    changed = true
+                    break
                 }
             }
         }
 
-        return stack.sum()
+        return ops.sumOf { it.toIntOrNull() ?: 0 }
     }
 
     fun dailyTemperatures(temperatures: IntArray): IntArray {
         val result = IntArray(temperatures.size)
-        val stack = ArrayDeque<Int>()
 
         for (i in temperatures.indices) {
-            while (stack.isNotEmpty() && temperatures[i] > temperatures[stack.last()]) {
-                val prevIndex = stack.removeLast()
-                result[prevIndex] = i - prevIndex
+            for (j in i + 1 until temperatures.size) {
+                if (temperatures[j] > temperatures[i]) {
+                    result[i] = j - i
+                    break
+                }
             }
-
-            stack.addLast(i)
         }
 
         return result
